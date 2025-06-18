@@ -4,7 +4,7 @@ from sqlalchemy import pool, engine_from_config
 from sqlmodel import SQLModel
 from alembic import context
 from app.core.config import settings
-from app.models import *
+from app.models import user, post, resume, skill, project, project_skill
 
 
 # this is the Alembic Config object, which provides
@@ -87,6 +87,7 @@ def do_run_migrations(connection):
 #         await connection.run_sync(do_run_migrations)
 
 #     await connectable.dispose()
+
 
 async def run_migrations_online():
     """Run migrations in 'online' mode using a sync engine."""
