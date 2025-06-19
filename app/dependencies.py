@@ -13,7 +13,7 @@ from app.models.user import User
 from app.schemas.user import TokenPayload
 
 
-reusable_oath2 = OAuth2PasswordBearer(tokenUrl="/login")
+reusable_oath2 = OAuth2PasswordBearer(tokenUrl="login")
 
 
 async def get_session():
@@ -23,7 +23,7 @@ async def get_session():
         yield session
 
 
-TokenDep = Annotated[str, reusable_oath2]
+TokenDep = Annotated[str, Depends(reusable_oath2)]
 SessionDep = Annotated[AsyncSession, Depends(get_session)]
 
 

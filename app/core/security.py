@@ -22,7 +22,13 @@ def create_access_token(
     expire = (
         datetime.now(timezone.utc) + expiry_time
         if expiry_time is not None
-        else timedelta(seconds=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+        else timedelta(
+            seconds=(
+                settings.ACCESS_TOKEN_EXPIRE_MINUTES
+                if not refresh
+                else settings.REFRESH_TOKEN_EXPIRE_DAYS
+            )
+        )
     )
     payload = {
         "exp": expire,
@@ -31,7 +37,8 @@ def create_access_token(
         "refresh": refresh,
     }
     token = jwt.encode(
-        payload=payload, key=settings.SECRET_KEY,
+        payload=payload,
+        key=settings.SECRET_KEY,
         algorithm=settings.JWT_ALGORITHM
     )
     return token
