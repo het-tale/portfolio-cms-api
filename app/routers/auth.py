@@ -40,11 +40,12 @@ async def login(
         refresh=True,
         expiry_time=refresh_token_expire,
     )
-    return JSONResponse(
+    res = JSONResponse(
         content={
             "message": "Login succeful",
             "access_token": access_token,
-            "refresh_token": refresh_token,
             "user": {"email": db_user.email, "uid": str(db_user.id)},
         }
     )
+    res.set_cookie(key="refresh_token", value=refresh_token, httponly=True)
+    return res
