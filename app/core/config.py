@@ -1,5 +1,4 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
-import secrets
 
 
 class Settings(BaseSettings):
@@ -15,7 +14,7 @@ class Settings(BaseSettings):
     ADMIN: str
     ADMIN_PASSWORD: str
     ADMIN_USERNAME: str
-    SECRET_KEY: str = secrets.token_urlsafe(32)
+    SECRET_KEY: str
     JWT_ALGORITHM: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int
 
