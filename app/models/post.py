@@ -20,10 +20,10 @@ class Post(SQLModel, table=True):
     slug: str = Field(sa_column=Column(pg.VARCHAR(255), nullable=False,
                                        unique=True))
     created_at: datetime = Field(
-        sa_column=Column(pg.TIMESTAMP, nullable=False),
+        sa_column=Column(pg.TIMESTAMP(timezone=True), nullable=False),
         default_factory=lambda: datetime.now(timezone.utc),
     )
     updated_at: datetime = Field(
-        sa_column=Column(pg.TIMESTAMP, nullable=False),
+        sa_column=Column(pg.TIMESTAMP(timezone=True), nullable=False),
         default_factory=lambda: datetime.now(timezone.utc),
     )
