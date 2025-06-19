@@ -17,9 +17,10 @@ class User(SQLModel, table=True):
     email: EmailStr = Field(
         sa_column=Column(pg.VARCHAR(255), nullable=False, unique=True)
     )
-    hashed_password: str = Field(sa_column=Column(pg.VARCHAR(128),
-                                                  nullable=False))
+    hashed_password: str = Field(
+        sa_column=Column(pg.VARCHAR(128), nullable=False), exclude=True
+    )
     created_at: datetime = Field(
-        sa_column=Column(pg.TIMESTAMP),
+        sa_column=Column(pg.TIMESTAMP(timezone=True), nullable=False),
         default_factory=lambda: datetime.now(timezone.utc),
     )

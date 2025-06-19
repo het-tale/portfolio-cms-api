@@ -9,6 +9,9 @@ class Settings(BaseSettings):
     TITLE: str
     DESCRIPTION: str
     ENV: str
+    ADMIN: str
+    ADMIN_PASSWORD: str
+    ADMIN_USERNAME: str
 
 
 settings = Settings()
