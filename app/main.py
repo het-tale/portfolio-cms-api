@@ -1,20 +1,10 @@
 from fastapi import FastAPI
 from .core.config import settings
-from contextlib import asynccontextmanager
-from .core.database import init_db
+from app.routers.auth import auth_router
 
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    print("server is starting")
-    await init_db()
-    yield
-    print("server is being stopped")
 
 app = FastAPI(title=settings.TITLE,
-              description=settings.DESCRIPTION, lifespan=lifespan)
+              description=settings.DESCRIPTION)
 
 
-@app.get("/")
-def say_hello():
-    return "Hello, World!"
+app.include_router(auth_router)

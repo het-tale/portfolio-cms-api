@@ -3,6 +3,7 @@ from fastapi import Depends
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlalchemy.orm import sessionmaker
 from app.core.database import engine
+from fastapi.security import OAuth2PasswordRequestForm
 
 
 async def get_session():
@@ -16,3 +17,4 @@ async def get_session():
 
 
 SessionDep = Annotated[AsyncSession, Depends(get_session)]
+AuthDep = Annotated[OAuth2PasswordRequestForm, Depends()]
