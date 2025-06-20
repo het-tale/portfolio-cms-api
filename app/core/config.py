@@ -1,4 +1,5 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
+import cloudinary
 
 
 class Settings(BaseSettings):
@@ -18,6 +19,17 @@ class Settings(BaseSettings):
     JWT_ALGORITHM: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int
     REFRESH_TOKEN_EXPIRE_DAYS: int
+    CLOUD_NAME: str
+    CLOUD_API_KEY: str
+    CLOUD_API_SECRET: str
+    CLOUDINARY_URL: str
 
 
 settings = Settings()
+
+cloudinary.config(
+    cloud_name=settings.CLOUD_NAME,
+    api_key=settings.CLOUD_API_KEY,
+    api_secret=settings.CLOUD_API_SECRET,
+    secure=True,
+)
