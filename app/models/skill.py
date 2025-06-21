@@ -1,22 +1,10 @@
-from enum import Enum
-from typing import Optional, TYPE_CHECKING
-from sqlmodel import Column, Field, Relationship, SQLModel
+from typing import Optional
+from sqlmodel import Column, Field, SQLModel
 from datetime import datetime, timezone
 import sqlalchemy.dialects.postgresql as pg
 import uuid
 
-if TYPE_CHECKING:
-    from app.models.project import Project
-from app.models.project_skill import ProjectSkill
-
-
-class Category(Enum):
-    PROGRAMMING_LANGUAGES = "programming_languages"
-    FRONTEND = "frontend"
-    BACKEND = "backend"
-    DATABASE = "database"
-    DEVOPS = "devops"
-    TOOLS = "tools"
+from ..utils.enums import Category
 
 
 class Skill(SQLModel, table=True):
@@ -45,6 +33,6 @@ class Skill(SQLModel, table=True):
         default_factory=lambda: datetime.now(timezone.utc),
     )
     # Many to many relationship with projects
-    projects: list["Project"] = Relationship(
-        back_populates="skills", link_model=ProjectSkill
-    )
+    # projects: list["Project"] = Relationship(
+    #     back_populates="skills", link_model=ProjectSkill
+    # )
