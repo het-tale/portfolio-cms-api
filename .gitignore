@@ -1,0 +1,7 @@
+.env
+requirements.txt
+.vscode/
+structure.png
+# Python virtual environment
+venv/
+__pycache__/

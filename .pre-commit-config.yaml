@@ -1,0 +1,9 @@
+repos:
+  - repo: local
+    hooks:
+      - id: alembic-check-migration
+        name: Alembic Migration Check
+        entry: scripts/check_migration.sh
+        language: system
+        types: [python]
+
