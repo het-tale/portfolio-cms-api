@@ -1,14 +1,17 @@
 from typing import Annotated
-from fastapi import APIRouter, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.responses import JSONResponse
 
-from app.dependencies import SessionDep
+from app.dependencies import SessionDep, get_current_user
 from app.schemas.skill import SkillBase, SkillUpdate
 from app.utils.enums import Category
 from ..services.skill import skill_service
 
 
-skill_router = APIRouter(tags=["Skills"], prefix="/skill")
+skill_router = APIRouter(
+    tags=["Skills"],
+    prefix="/skill",
+    dependencies=[Depends(get_current_user)])
 
 
 @skill_router.get("/get_skills_list")
