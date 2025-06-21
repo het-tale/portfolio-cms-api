@@ -1,11 +1,15 @@
 from typing import Annotated
-from fastapi import APIRouter, File, UploadFile
+from fastapi import APIRouter, Depends, File, UploadFile
 from fastapi.responses import JSONResponse
-from app.dependencies import SessionDep
+from app.dependencies import SessionDep, get_current_user
 from app.services.resume import resume_service
 
 
-resume_router = APIRouter(tags=["Resume"], prefix="/resume")
+resume_router = APIRouter(
+    tags=["Resume"],
+    prefix="/resume",
+    dependencies=[Depends(get_current_user)]
+    )
 
 
 @resume_router.post("/upload_resume")

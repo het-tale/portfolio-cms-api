@@ -1,21 +1,11 @@
-from enum import Enum
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 from pydantic import HttpUrl
-from sqlmodel import Column, Field, Relationship, SQLModel
+from sqlmodel import Column, Field, SQLModel
 from datetime import datetime, timezone
 import sqlalchemy.dialects.postgresql as pg
 import uuid
 
-from app.models.project_skill import ProjectSkill
-
-if TYPE_CHECKING:
-    from app.models.skill import Skill
-
-
-class ProjectStatus(Enum):
-    PLANNING = "planning"
-    IN_PROGRESS = "in_progress"
-    COMPLETED = "completed"
+from ..utils.enums import ProjectStatus
 
 
 class Project(SQLModel, table=True):
@@ -56,6 +46,6 @@ class Project(SQLModel, table=True):
         default_factory=lambda: datetime.now(timezone.utc),
     )
     # Many to many relationship with skills
-    skills: list["Skill"] = Relationship(
-        back_populates="projects", link_model=ProjectSkill
-    )
+    # skills: list["Skill"] = Relationship(
+    #     back_populates="projects", link_model=ProjectSkill
+    # )

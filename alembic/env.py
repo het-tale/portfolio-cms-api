@@ -4,7 +4,7 @@ from sqlalchemy import pool, engine_from_config
 from sqlmodel import SQLModel
 from alembic import context
 from app.core.config import settings
-from app.models import user, post, resume, skill, project, project_skill
+from app.models import user, post, resume, skill, project
 
 
 # this is the Alembic Config object, which provides
