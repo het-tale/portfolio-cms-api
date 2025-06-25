@@ -34,7 +34,7 @@ class OAuth2PasswordBearerWithCookie(OAuth2PasswordBearer):
             if auth and auth.startswith("Bearer "):
                 token = auth[7:]
         if not token:
-            raise HTTPException(status_code=403, detail="Not authenticated")
+            raise HTTPException(status_code=401, detail="Unauthorized")
         return token
 
 
@@ -42,8 +42,7 @@ reusable_oath2 = OAuth2PasswordBearerWithCookie(tokenUrl="login")
 TokenDep = Annotated[str, Depends(reusable_oath2)]
 
 
-async def get_current_user(session: SessionDep, request: Request) -> User:
-    token = request.cookies.get("access_token")
+async def get_current_user(session: SessionDep, token: TokenDep) -> User:
     try:
         payload = jwt.decode(
             token, key=settings.SECRET_KEY, algorithms=settings.JWT_ALGORITHM
