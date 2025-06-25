@@ -47,12 +47,13 @@ async def login(
     )
     res = JSONResponse(
         content={
-            "message": "Login succeful",
+            "message": "Logged in successfully",
             "access_token": access_token,
             "user": {"email": db_user.email, "uid": str(db_user.id)},
         }
     )
     res.set_cookie(key="refresh_token", value=refresh_token, httponly=True)
+    res.set_cookie(key="access_token", value=access_token, httponly=True)
     return res
 
 
