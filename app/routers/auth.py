@@ -1,5 +1,5 @@
 from datetime import timedelta
-from typing import Annotated
+from typing import Annotated, Optional
 from fastapi import APIRouter, Cookie, Depends, HTTPException, status
 import jwt
 from jwt.exceptions import InvalidTokenError, ExpiredSignatureError
@@ -59,8 +59,13 @@ async def login(
 
 @auth_router.post("/refresh_token")
 async def get_new_access_token(
-    session: SessionDep, refresh_token: Annotated[str, Cookie()]
+    session: SessionDep,
+    refresh_token: Annotated[Optional[str], Cookie()] = None
 ):
+    if not refresh_token:
+        raise HTTPException(
+                status_code=401,
+                detail="Missing refresh token")
     try:
         payload = jwt.decode(
             refresh_token,
@@ -88,7 +93,11 @@ async def get_new_access_token(
         data={"email": user_db.email, "id": str(user_db.id)},
         expiry_time=timedelta(seconds=settings.ACCESS_TOKEN_EXPIRE_MINUTES),
     )
-    return JSONResponse(
+    res = JSONResponse(
         content={
-            "access_token": access_token
-            })
+            "message": "New access token generated",
+            "access_token": access_token,
+        }
+    )
+    res.set_cookie(key="access_token", value=access_token, httponly=True)
+    return res
