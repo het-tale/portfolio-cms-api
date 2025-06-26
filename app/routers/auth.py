@@ -5,7 +5,7 @@ import jwt
 from jwt.exceptions import InvalidTokenError, ExpiredSignatureError
 from pydantic import ValidationError
 from app.core.config import settings
-from app.dependencies import SessionDep
+from app.dependencies import CurrentUserDep, SessionDep
 from app.models.user import User
 from app.schemas.user import TokenPayload
 from ..services.user import user_service
@@ -52,20 +52,33 @@ async def login(
             "user": {"email": db_user.email, "uid": str(db_user.id)},
         }
     )
-    res.set_cookie(key="refresh_token", value=refresh_token, httponly=True)
-    res.set_cookie(key="access_token", value=access_token, httponly=True)
+    res.set_cookie(
+        key="access_token",
+        value=access_token,
+        httponly=True,
+        samesite="Lax",
+        secure=True,
+        path="/",
+    )
+    res.set_cookie(
+        key="refresh_token",
+        value=refresh_token,
+        httponly=True,
+        samesite="Lax",
+        secure=True,
+        path="/",
+    )
     return res
 
 
 @auth_router.post("/refresh_token")
 async def get_new_access_token(
     session: SessionDep,
-    refresh_token: Annotated[Optional[str], Cookie()] = None
+    refresh_token: Annotated[Optional[str],
+                             Cookie()] = None
 ):
     if not refresh_token:
-        raise HTTPException(
-                status_code=401,
-                detail="Missing refresh token")
+        raise HTTPException(status_code=401, detail="Missing refresh token")
     try:
         payload = jwt.decode(
             refresh_token,
@@ -78,8 +91,8 @@ async def get_new_access_token(
 
     except ExpiredSignatureError:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Unauthorized")
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized"
+        )
     except (InvalidTokenError, ValidationError):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -99,5 +112,24 @@ async def get_new_access_token(
             "access_token": access_token,
         }
     )
-    res.set_cookie(key="access_token", value=access_token, httponly=True)
+    res.set_cookie(
+        key="access_token",
+        value=access_token,
+        httponly=True,
+        samesite="Lax",
+        secure=True,
+        path="/",
+    )
     return res
+
+
+@auth_router.post("/logout")
+def logout(current: CurrentUserDep):
+    response = JSONResponse(
+        content={
+            "message": "Logged out successfully",
+        }
+    )
+    response.delete_cookie(key="access_token", path="/")
+    response.delete_cookie(key="refresh_token", path="/")
+    return response
