@@ -78,7 +78,9 @@ async def get_new_access_token(
                              Cookie()] = None
 ):
     if not refresh_token:
-        raise HTTPException(status_code=401, detail="Missing refresh token")
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Missing refresh token")
     try:
         payload = jwt.decode(
             refresh_token,
