@@ -2,36 +2,31 @@ from datetime import datetime, timezone
 from typing import Optional
 from fastapi import HTTPException, status
 from pydantic import HttpUrl
-from sqlmodel import or_, select, col
+from sqlalchemy import String
+from sqlmodel import cast, or_, select
 from app.dependencies import SessionDep
 from app.models.project import Project
 from app.schemas.project import ProjectBase
-from app.utils.enums import ProjectStatus
 
 
 class ProjectService:
     async def get_all_projects(
         self,
         session: SessionDep,
-        title: Optional[str] = None,
-        description: Optional[str] = None,
-        status: Optional[ProjectStatus] = None,
+        search: Optional[str] = None,
         skip: int = 0,
         limit: int = 10,
     ):
         statement = select(Project)
         filters = []
-        if title:
-            filters.append(col(Project.title).ilike(f"%{title}%"))
-        if description:
-            filters.append(col(Project.description).ilike(f"%{description}%"))
-        if status:
-            filters.append(col(Project.status) == status)
+        if search:
+            filters.append((Project.title).ilike(f"%{search}%"))
+            filters.append((Project.description).ilike(f"%{search}%"))
+            filters.append(cast(Project.status, String).ilike(f"%{search}%"))
         if filters:
             statement = statement.where(or_(*filters))
         projects_list = (
-            await session.exec(statement.offset(skip).limit(limit))
-            ).all()
+            await session.exec(statement.offset(skip).limit(limit))).all()
         return projects_list
 
     async def get_project_by_id(self, session: SessionDep, project_id: str):

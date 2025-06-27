@@ -32,14 +32,15 @@ project_router = APIRouter(
 @project_router.get("/get_all_projects")
 async def get_projects_list(
     session: SessionDep,
-    title: Annotated[str, Query()] = None,
-    description: Annotated[str, Query()] = None,
-    status: Annotated[Optional[ProjectStatus], Query()] = None,
+    search: Annotated[str, Query()] = None,
     skip: int = 0,
     limit: int = 10,
 ):
     projects_list = await project_service.get_all_projects(
-        session, title, description, status, skip, limit
+        session,
+        search,
+        skip,
+        limit
     )
     return projects_list
 
