@@ -105,23 +105,26 @@ async def create_project(
 async def edit_project(
     session: SessionDep,
     project_id: str,
-    title: Annotated[str, Form()],
-    description: Annotated[str, Form()],
-    project_status: Annotated[ProjectStatus, Form()],
-    github_link: Annotated[Optional[HttpUrl], Form()],
-    website_link: Annotated[Optional[HttpUrl], Form()],
-    project_img: Annotated[UploadFile, File()],
+    title: Annotated[str, Form()] = None,
+    description: Annotated[str, Form()] = None,
+    project_status: Annotated[ProjectStatus, Form()] = None,
+    github_link: Annotated[Optional[HttpUrl], Form()] = None,
+    website_link: Annotated[Optional[HttpUrl], Form()] = None,
+    project_img: Annotated[UploadFile, File()] = None,
 ):
     project = await project_service.get_project_by_id(session, project_id)
-    upload_result = cloudinary.uploader.upload(project_img.file)
-    image_url = upload_result["secure_url"]
+    image_url = None
+    if project_img:
+        upload_result = cloudinary.uploader.upload(project_img.file)
+        image_url = upload_result["secure_url"]
     project_in = ProjectBase(
         title=title,
         description=description,
         status=project_status,
         github_link=github_link,
         website_link=website_link,
-        illustration=image_url,
+        illustration=image_url if image_url
+        is not None else project.illustration,
     )
     project = await project_service.update_project(
         session,
@@ -129,7 +132,7 @@ async def edit_project(
         project)
     return JSONResponse(
         content={
-            "project_id": project.project_id,
+            "project_id": str(project.project_id),
             "title": project.title,
             "description": project.description,
             "status": project.status.value,
