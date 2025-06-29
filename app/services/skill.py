@@ -1,29 +1,26 @@
 from datetime import datetime, timezone
 from typing import Optional
 from fastapi import HTTPException, status
-from sqlalchemy import func
-from sqlmodel import col, or_, select
+from sqlalchemy import String, func
+from sqlmodel import cast, or_, select
 from app.dependencies import SessionDep
 from app.models.skill import Skill
 from app.schemas.skill import SkillBase, SkillUpdate
-from app.utils.enums import Category
 
 
 class SkillService:
     async def get_all_skills(
             self,
             session: SessionDep,
-            name: Optional[str] = None,
-            category: Optional[Category] = None,
+            search: Optional[str] = None,
             skip: int = 0,
             limit: int = 10
             ):
         statement = select(Skill)
         filters = []
-        if name:
-            filters.append(col(Skill.name).ilike(f"%{name}%"))
-        if category:
-            filters.append(col(Skill.category) == category)
+        if search:
+            filters.append((Skill.name).ilike(f"%{search}%"))
+            filters.append(cast(Skill.category, String).ilike(f"%{search}%"))
         if filters:
             statement = statement.where(or_(*filters))
         skills_list = (

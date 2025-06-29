@@ -4,7 +4,6 @@ from fastapi.responses import JSONResponse
 
 from app.dependencies import SessionDep, get_current_user
 from app.schemas.skill import SkillBase, SkillUpdate
-from app.utils.enums import Category
 from ..services.skill import skill_service
 
 
@@ -17,15 +16,13 @@ skill_router = APIRouter(
 @skill_router.get("/get_skills_list")
 async def get_skills_list(
     session: SessionDep,
-    name: Annotated[str, Query()] = None,
-    category: Annotated[Category, Query()] = None,
+    search: Annotated[str, Query()] = None,
     skip: int = 0,
     limit: int = 10,
 ):
     return await skill_service.get_all_skills(
         session,
-        name,
-        category,
+        search,
         skip,
         limit)
 
@@ -36,7 +33,7 @@ async def get_skill_by_id(session: SessionDep, skill_id: str):
         skill = await skill_service.get_skill_by_id(session, skill_id)
         return JSONResponse(
             content={
-                "skill_id": skill.skill_id,
+                "skill_id": str(skill.skill_id),
                 "name": skill.name,
                 "category": skill.category.value,
                 "years_of_experience": skill.years_of_experience,
